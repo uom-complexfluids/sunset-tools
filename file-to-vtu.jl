@@ -11,7 +11,8 @@ ARGS
 4   Do the fields_****** files contain volume data?
 5   Do the nodes_****** files contain index data?
 6   Do the nodes_****** files contain h_small data?
-7   (Optional) LAYER file name prefix. Defaults to "".
+7   Do the fields_****** files contain moving frame data?
+8   (Optional) LAYER file name prefix. Defaults to "".
 """
 
 
@@ -33,7 +34,8 @@ arg_has_ω = parse(Bool, ARGS[3])
 arg_has_vol = parse(Bool, ARGS[4])
 arg_has_index = parse(Bool, ARGS[5])
 arg_has_h_small = parse(Bool, ARGS[6])
-arg_out_name_prefix = length(ARGS) > 6 ? ARGS[7] : ""
+arg_has_moving_frame = parse(Bool, ARGS[7])
+arg_out_name_prefix = length(ARGS) > 7 ? ARGS[8] : ""
 
 if !isdir(arg_fields_dir)
     println(arg_fields_dir)
@@ -69,7 +71,7 @@ framepool = arg_frame_start:arg_frame_end
             println("Frame $(i_frame) not found")
             continue
         end
-        field_set = read_fields_files(arg_fields_dir, arg_D, arg_Y, arg_n_cores, i_frame; has_ω = arg_has_ω, has_vol = arg_has_vol)
+        field_set = read_fields_files(arg_fields_dir, arg_D, arg_Y, arg_n_cores, i_frame; has_ω = arg_has_ω, has_vol = arg_has_vol, has_moving_frame = arg_has_moving_frame)
         keep_indices!(field_set, node_indices)
         full_set = stitch_node_sets(node_set, field_set)
         scale!(full_set, arg_L_char)
