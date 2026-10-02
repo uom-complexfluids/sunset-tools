@@ -6,7 +6,8 @@ Script args:
 1   input dir
 2   output init_flame dir
 3   contains hrr information?
-4   (optional) Output file name. Defaults to `init_flame.in`.
+4   L_char
+5   (optional) Output file name. Defaults to `init_flame.in`.
 """
 
 using Dates, Printf
@@ -15,7 +16,8 @@ using SunsetFileIO
 arg_in_dir = ARGS[1]
 arg_out_dir = ARGS[2]
 arg_has_hrr = parse(Bool, ARGS[3])
-arg_out_name = length(ARGS) < 4 ? "init_flame.in" : ARGS[4]
+arg_L_char = parse(Float64, ARGS[4])
+arg_out_name = length(ARGS) < 5 ? "init_flame.in" : ARGS[5]
 
 if !isdir(arg_out_dir)
     throw(ArgumentError("Output directory not found"))
@@ -28,6 +30,7 @@ end
 (arg_D, arg_Y, arg_n_cores, arg_i_frame) = ask_file_type("flame")
 
 node_set = read_flames_file(arg_in_dir, arg_D, arg_Y, arg_n_cores, arg_i_frame; has_hrr = arg_has_hrr)
+scale!(node_set, arg_L_char)
 
 # Post-process flame file
 bad_fields = setdiff(node_set.fields, init_flame_fields(arg_D, arg_Y))
